@@ -11,6 +11,16 @@ Constraints
 - Can only output to Intel HEX
 - Must not take longer than a month to develop (So by the end of August, 2017)
 
+Stage
+=====
+~~1. Design~~ Finished.
+2. Prototype
+3. Tweaks
+4. Prototype II
+5. Bug-fixes
+6. Finalize
+~~7. Support~~ Not needed.
+
 Parser
 ======
 
@@ -54,3 +64,8 @@ Heres the hard part: operands can vary in size.
 	  mBuff   opBuff[0]   opBuff[1]     cBuff
 	
 	Diagram of char string <-> buffer relationship
+
+Modules
+=======
+- keyword table(s)
+- parser
