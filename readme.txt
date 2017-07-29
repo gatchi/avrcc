@@ -1,4 +1,4 @@
-gatchi's AVR-assembly cross-compiler
+gatchi's AVR-assembly Cross-compiler
 ====================================
 
 WARNING:
