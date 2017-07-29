@@ -1,0 +1,49 @@
+Needs
+=====
+- argument handler
+- parser
+- Intel HEX file creator
+
+Parser
+======
+
+Sample input
+------------
+
+	add r1, r2
+	mov r1, r3      ;An instruction
+	adiw r5:r4, 13  ;Another instruction
+
+"add" is the mnenomic.
+r1 and r2 are the operands.
+spaces and commas are delimiters.
+commas are specifically used to separate operands.
+line feeds (or carriage returns + line feeds) demarcate the end of an instruction.
+
+Process
+-------
+0. Open the output file and defer its closure.
+
+1. If it's the begining of the input or post newline and not empty, parse line.
+2. First word is the mnemonic, and wont be more than 6 letters.  Exit with error if no space after 6 letters.
+3. After extracting the mnemonic, find its value from a map.  If successful, continue.  Otherwise exit and error.
+4. Add value of mnemonic to mnemonic buffer.
+5. Lookup how many operands the instruction should have.  Remember that number.
+
+Heres the hard part: operands can vary in size.
+	Probably should implement a character limit for operands.  Let's go with 50 for now.
+
+6. Read the line into a word buffer until a comma is reached or limit is hit.  Continue this step until all operands are filled.
+     If a newline is hit before operands are filled, exit and error.
+7. Continue reading, stopping at the next comma, space, or semicolon.
+     If the rest of the line (other than delimiters) isnt a comment, exit and error.  Say "incorrect number of operands".
+8. If there is a semicolon before the newline, read the characters inbetween into a comment buffer.
+9. Write the line to file.
+
+10. Repeat 1-9 until EOF.
+
+	  mov      r1,          r3     ;An instruction
+	   |        |            |            |
+	  mBuff   opBuff[0]   opBuff[1]     cBuff
+	
+	Diagram of char string <-> buffer relationship
