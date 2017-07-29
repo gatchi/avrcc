@@ -1,8 +1,15 @@
+file created on 07/28/2017
+
 Needs
 =====
-- argument handler
 - parser
 - Intel HEX file creator
+
+Constraints
+===========
+- Can only be used for the Atmega2560
+- Can only output to Intel HEX
+- Must not take longer than a month to develop (So by the end of August, 2017)
 
 Parser
 ======
