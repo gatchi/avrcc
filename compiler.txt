@@ -37,8 +37,11 @@ spaces and commas are delimiters.
 commas are specifically used to separate operands.
 line feeds (or carriage returns + line feeds) demarcate the end of an instruction.
 
-Process
--------
+Parse process
+-------------
+
+### Line reading
+
 0. Open the output file and defer its closure.
 
 1. If it's the begining of the input or post newline and not empty, parse line.
@@ -55,15 +58,29 @@ Heres the hard part: operands can vary in size.
 7. Continue reading, stopping at the next comma, space, or semicolon.
      If the rest of the line (other than delimiters) isnt a comment, exit and error.  Say "incorrect number of operands".
 8. If there is a semicolon before the newline, read the characters inbetween into a comment buffer.
-9. Write the line to file.
+9. Construct line to write, then write line.
 
-10. Repeat 1-9 until EOF.
+Repeat 1-10 until EOF.
 
 	  mov      r1,          r3     ;An instruction
 	   |        |            |            |
 	  mBuff   opBuff[0]   opBuff[1]     cBuff
 	
 	Diagram of char string <-> buffer relationship
+
+### Instruction construction
+
+Each instruction is constructed differently, so you'd need a function for each.
+The beginning of the instruction can be mapped, as well as register address values.
+Those plus the rest (like 
+
+Intel HEX file creator
+======================
+More details about the HEX file format can be found on wikipedia.
+
+16-bit opcodes are sent little endian to the Atmega2560.
+As in, the first byte (the one with the static code and the one listed first on the
+	the AVR assembly documentation) is sent, followed usually by addresses and/or contants.
 
 Modules
 =======
