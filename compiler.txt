@@ -77,9 +77,10 @@ Intel HEX file creator
 ======================
 More details about the HEX file format can be found on wikipedia.
 
-16-bit opcodes are sent little endian to the Atmega2560.
+16-bit opcodes are sent little-endian to the Atmega2560.
 As in, the first byte (the one with the static code and the one listed first on the
 	the AVR assembly documentation) is sent, followed usually by addresses and/or contants.
+Bit order is big-endian, even when words are split within an opcode.
 
 Modules
 =======
