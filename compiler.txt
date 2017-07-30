@@ -71,8 +71,7 @@ Repeat 1-10 until EOF.
 ### Instruction construction
 
 Each instruction is constructed differently, so you'd need a function for each.
-The beginning of the instruction can be mapped, as well as register address values.
-Those plus the rest (like 
+The beginning of the instruction can be mapped, as well as register addresses.
 
 Intel HEX file creator
 ======================
