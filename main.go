@@ -2,7 +2,6 @@ package main
 
 import "fmt"
 import "os"
-//import "strings"
 
 /// Exit codes
 const (
@@ -19,7 +18,7 @@ func main() {
 		os.Exit(noFileName)
 	}
 	inputFileName := os.Args[1]
-	
+
 	// Open assembly file
 	file, err := os.Open(inputFileName)
 	defer file.Close()
