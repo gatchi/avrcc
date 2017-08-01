@@ -1,7 +1,10 @@
 package main
 
-import "fmt"
-import "os"
+import (
+	"bufio"
+	"fmt"
+	"os"
+)
 
 /// Exit codes
 const (
@@ -31,6 +34,14 @@ func main() {
 	} else {
 		fmt.Printf("Opened %s for reading.\n", inputFileName)
 	}
-	_ = file
+
+	// Process input file
+	fileReader := bufio.NewReader(file)
+	token, err := fileReader.ReadString(' ')
+	fmt.Println("First token: " + token)
+	if err != nil {
+		fmt.Print("Something happened: ")
+		fmt.Println(err)
+	}
 	fmt.Printf("Closed %s.\n", inputFileName)
 }
