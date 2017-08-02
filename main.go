@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	util "github.com/gatchi/utilgo"
 	"os"
 )
 
@@ -36,6 +37,8 @@ func main() {
 	}
 
 	// Process input file
+
+	/* // Using reader
 	fileReader := bufio.NewReader(file)
 	token, err := fileReader.ReadString(' ')
 	fmt.Println("First token: " + token)
@@ -43,5 +46,17 @@ func main() {
 		fmt.Print("Something happened: ")
 		fmt.Println(err)
 	}
+	*/
+
+	// Using scanner:
+	scanner := bufio.NewScanner(file)
+	scanner.Split(util.ScanWords)
+	for scanner.Scan() {
+		fmt.Println(scanner.Text())
+	}
+	if err := scanner.Err(); err != nil {
+		fmt.Println(os.Stderr, "reading input:", err)
+	}
+
 	fmt.Printf("Closed %s.\n", inputFileName)
 }
