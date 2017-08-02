@@ -1,10 +1,10 @@
-package avrcc
+package main
 
-var register = map[string]string{
+var registerList = map[string]string{
 	"r1": "00000",
 	"r2": "00001",
 }
 
-var mnemonic = map[string]string{
+var mnemonicList = map[string]string{
 	"add": "000011",
 }
