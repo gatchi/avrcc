@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	util "github.com/gatchi/utilgo"
 	"os"
 )
 
@@ -11,6 +10,7 @@ import (
 const (
 	properExit int = 0
 	noFileName int = 1
+	mnemonicError int = 2
 )
 
 func main() {
@@ -25,12 +25,14 @@ func main() {
 
 	// Open assembly file
 	file, err := os.Open(inputFileName)
-	defer file.Close()
+	defer alertAndClose(file)
 	if os.IsNotExist(err) {
 		fmt.Println("File does not exist by that name.")
+		alertAndClose(file)
 		os.Exit(1)
 	} else if err != nil {
 		fmt.Println("Could not open file: " + err.Error())
+		alertAndClose(file)
 		os.Exit(1)
 	} else {
 		fmt.Printf("Opened %s for reading.\n", inputFileName)
@@ -38,17 +40,29 @@ func main() {
 
 	// Process input file
 
-	/* // Using reader
+	// Using reader
 	fileReader := bufio.NewReader(file)
+	var mnemonic string
+
+	// Read first token, which should be a mnemonic followed by a space
 	token, err := fileReader.ReadString(' ')
-	fmt.Println("First token: " + token)
+	//fmt.Println("First token: " + token)
 	if err != nil {
 		fmt.Print("Something happened: ")
 		fmt.Println(err)
 	}
-	*/
+	if mnemonicList[token[:len(token)-1]] != "" {
+		mnemonic = token
+		fmt.Println("Mnemonic: " + token)
+	} else {
+		fmt.Printf("Error on line %v: Line doesn't start with valid mnemonic\n", 1)
+		logTokenError(token)
+		alertAndClose(file)
+		os.Exit(mnemonicError)
+	}
+	_ = mnemonic
 
-	// Using scanner:
+	/*// Using scanner:
 	scanner := bufio.NewScanner(file)
 	scanner.Split(util.ScanWords)
 	for scanner.Scan() {
@@ -57,6 +71,17 @@ func main() {
 	if err := scanner.Err(); err != nil {
 		fmt.Println(os.Stderr, "reading input:", err)
 	}
+	*/
+}
 
-	fmt.Printf("Closed %s.\n", inputFileName)
+func alertAndClose(file *os.File) {
+	file.Close()
+	fmt.Println("File closed.")
+}
+
+func logTokenError(token string) {
+		fmt.Println("Token read: " + token)
+		fmt.Printf("Length of token: %v\n", len(token))
+		fmt.Printf("Last token value: %v\n", token[len(token)-1])
+		fmt.Println("Mapped value: " + mnemonicList[token])
 }
