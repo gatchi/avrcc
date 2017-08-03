@@ -3,7 +3,9 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
+	"strings"
 )
 
 /// Exit codes
@@ -11,6 +13,11 @@ const (
 	properExit int = 0
 	noFileName int = 1
 	mnemonicError int = 2
+)
+
+var (
+	mnemonic string
+	ops [5]string
 )
 
 func main() {
@@ -38,40 +45,57 @@ func main() {
 		fmt.Printf("Opened %s for reading.\n", inputFileName)
 	}
 
-	// Process input file
+	/*------------ Process input file ------------------*/
 
 	// Using reader
 	fileReader := bufio.NewReader(file)
-	var mnemonic string
+
+	/* Mnemonic */
 
 	// Read first token, which should be a mnemonic followed by a space
 	token, err := fileReader.ReadString(' ')
-	//fmt.Println("First token: " + token)
 	if err != nil {
 		fmt.Print("Something happened: ")
 		fmt.Println(err)
 	}
+	// Mnemonic found; save
 	if mnemonicList[token[:len(token)-1]] != "" {
-		mnemonic = token
+		mnemonic = strings.TrimSpace(token)
 		fmt.Println("Mnemonic: " + token)
+	// Mnemonic not found; throw error
 	} else {
 		fmt.Printf("Error on line %v: Line doesn't start with valid mnemonic\n", 1)
 		logTokenError(token)
 		alertAndClose(file)
 		os.Exit(mnemonicError)
 	}
-	_ = mnemonic
 
-	/*// Using scanner:
-	scanner := bufio.NewScanner(file)
-	scanner.Split(util.ScanWords)
-	for scanner.Scan() {
-		fmt.Println(scanner.Text())
+	/* Operands */
+
+	// Find the number of operands we're expecting
+	opNum := mnemonicOpList[mnemonic]
+	fmt.Printf("Numeber of ops: %d\n", opNum)
+
+	// Extract operands until hitting newline or a comment
+	for i := 0; i < opNum; i++ {
+		// If this is the last op, expect a semicolon or newline at the end
+		token, err := fileReader.ReadString(',')
+
+		// Catch unexpected error
+		if err != nil && err != io.EOF {
+			fmt.Print("Something happened: ")
+			fmt.Println(err)
+			break
+		}
+
+		// Print token
+		fmt.Printf("OP #%d: %s\n", i, strings.Trim(token, ", "))
+
+		// In case less text than expected
+		if err == io.EOF {
+			break
+		}
 	}
-	if err := scanner.Err(); err != nil {
-		fmt.Println(os.Stderr, "reading input:", err)
-	}
-	*/
 }
 
 func alertAndClose(file *os.File) {
