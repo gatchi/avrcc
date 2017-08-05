@@ -3,7 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
-	//"io"
+	"io"
 	"os"
 	"strings"
 )
@@ -16,6 +16,7 @@ const (
 )
 
 var (
+	line string
 	mnemonic string
 	ops [5]string
 )
@@ -30,7 +31,8 @@ func main() {
 	}
 	inputFileName := os.Args[1]
 
-	// Open assembly file
+	/*---------------- Open input file -----------------*/
+
 	file, err := os.Open(inputFileName)
 	defer alertAndClose(file)
 	if os.IsNotExist(err) {
@@ -47,63 +49,66 @@ func main() {
 
 	/*------------ Process input file ------------------*/
 
-	// Using scanner cause we goin by lines
-	fileScanner := bufio.NewScanner(file)
-	fileScanner.Split(bufio.ScanLines)
-	fileScanner.Scan()
-	line := fileScanner.Text()
+	reader := bufio.NewScanner(file)
+	reader.Split(bufio.ScanLines)
 
-	/* Mnemonic */
+	// Read until no more file to read
+	j := 1
+	for reader.Scan() {
+		line = reader.Text()
+		println("Line ", j)
+		j++
+		println("-------")
+		println(line)
 
-	// Need a string reader for this
-	lineReader := strings.NewReader(line)
+		sReader := strings.NewReader(line)
 
-	// Read first token, which should be a mnemonic followed by a space
-	for {
-		letter, _, _ := lineReader.ReadRune()
-		if letter == ' ' {
-			break
+		// Crop comment, if any
+		newEnd := 0
+		for c, _ := sReader.ReadByte(); c != ';'; newEnd++ {
+			c, err = sReader.ReadByte()
+			if err == io.EOF {
+				break
+			}
 		}
-		mnemonic = mnemonic + string(letter)
-	}
-	fmt.Println(mnemonic)
+		cLine := line[:newEnd]
+		sReader.Reset(cLine)
 
-	// Check if mnemonic is valid; if it isn't, error and exit
-	if mnemonicList[mnemonic] == "" {
-		fmt.Printf("Error on line %v: Line doesn't start with valid mnemonic\n", 1)
-		logTokenError(mnemonic)
-		alertAndClose(file)
-		os.Exit(mnemonicError)
-	}
+		// Get mnemonic
+		mnemonic = ""
+		for c, _ := sReader.ReadByte(); c != ' '; {
+			mnemonic = mnemonic + string(c)
+			c, err = sReader.ReadByte()
+			if err == io.EOF {
+				break
+			}
+		}
+		println(mnemonic)
 
-	/* Operands */
-
-	/*
-	// Find the number of operands we're expecting
-	opNum := mnemonicOpList[mnemonic]
-	fmt.Printf("Numeber of ops: %d\n", opNum)
-
-	// Extract operands until hitting newline or a comment
-	for i := 0; i < opNum; i++ {
-		// If this is the last op, expect a semicolon or newline at the end
-		token, err := fileReader.ReadString(',')
-
-		// Catch unexpected error
-		if err != nil && err != io.EOF {
-			fmt.Print("Something happened: ")
-			fmt.Println(err)
-			break
+		// Check if mnemonic is valid; if it isn't, error and exit
+		if mnemonicList[mnemonic] == "" {
+			fmt.Printf("Error on line %v: Line doesn't start with valid mnemonic\n", 1)
+			logTokenError(mnemonic)
+			alertAndClose(file)
+			os.Exit(mnemonicError)
 		}
 
-		// Print token
-		fmt.Printf("OP #%d: %s\n", i, strings.Trim(token, ", "))
+		// Find the number of operands we're expecting
+		opNum := mnemonicOpList[mnemonic]
+		println(opNum)
 
-		// In case less text than expected
-		if err == io.EOF {
-			break
+		// Extract operands until hitting end of line
+		opIndex := 0
+		for c, err := sReader.ReadByte(); err != io.EOF && opIndex < opNum; {
+			for ; c != ','; {
+				ops[opIndex] = ops[opIndex] + string(c)
+				c, err = sReader.ReadByte()
+			}
+			opIndex++
+			println(ops[opIndex-1])
+			c, err = sReader.ReadByte()
 		}
 	}
-	*/
 }
 
 func alertAndClose(file *os.File) {
