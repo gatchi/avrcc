@@ -81,6 +81,7 @@ More details about the HEX file format can be found on wikipedia.
 As in, the first byte (the one with the static code and the one listed first on the
 	the AVR assembly documentation) is sent, followed usually by addresses and/or contants.
 Bit order is big-endian, even when words are split within an opcode.
+Maximum bytes per record is 16.
 
 Modules
 =======
